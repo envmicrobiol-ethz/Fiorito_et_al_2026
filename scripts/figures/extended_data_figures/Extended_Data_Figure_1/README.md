@@ -1,0 +1,1 @@
+- `EDFigure1B_pH_conductivity_propionate_acetate.R`: generates the pH, conductivity, propionate and acetate depth profiles for Björsmossen, Lungsmossen and Norra Romyren.
