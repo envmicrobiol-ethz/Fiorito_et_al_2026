@@ -1,1 +1,2 @@
-- `EDFigure1B_pH_conductivity_propionate_acetate.R`: generates the pH, conductivity, propionate and acetate depth profiles for Björsmossen, Lungsmossen and Norra Romyren.
+- `EDFigure1B_pH_conductivity_propionate_acetate.R`: generates the pH, conductivity, propionate and acetate depth profiles for Björsmossen and Norra Romyren.
+- `EDFigure1C_alpha_diversity.R`: generates the observed-richness, Shannon-diversity and Pielou-evenness plots for the spatial and deep 16S rRNA profiles.
