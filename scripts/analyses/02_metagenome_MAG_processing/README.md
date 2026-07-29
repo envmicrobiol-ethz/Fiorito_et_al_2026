@@ -8,5 +8,5 @@
 - `05b_seqkit_assembly_stats.sh`: calculates per-sample metaSPAdes assembly statistics using SeqKit.
 - `06_filter_scaffolds_min1000.sh`: removes scaffolds shorter than 1,000 nucleotides from each metaSPAdes assembly using BBMap `reformat.sh`.
 - `07_predict_genes_with_prodigal.sh`: predicts protein-coding genes from scaffolds ≥1,000 nucleotides using Prodigal v2.6.3 in metagenomic mode.
-- `08_generate_differential_coverage_profiles.sh`: maps selected cleaned metagenomic read sets to each filtered assembly using BBMap with random assignment of ambiguously mapped reads, followed by BAM sorting and indexing with SAMtools.
 - `08_differential_coverage_mapping_design.tsv`: defines the cross-sample read-to-assembly combinations used to generate differential scaffold-coverage profiles for genome binning.
+- `08_generate_differential_coverage_profiles.sh`: maps selected cleaned metagenomic read sets to each filtered assembly using BBMap and produces sorted, indexed BAM files and scaffold-coverage profiles for differential-coverage binning.
