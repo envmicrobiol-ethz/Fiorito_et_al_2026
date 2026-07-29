@@ -13,3 +13,4 @@
 - `09_metabat2_binning.sh`: generates differential scaffold-depth profiles from the selected cross-sample BAM files and performs per-assembly genome binning using MetaBAT2 v2.17.
 - `10_maxbin2_binning.sh`: extracts all sample-specific scaffold-coverage profiles from the MetaBAT2 depth tables and performs per-assembly genome binning using MaxBin2 v2.2.7.
 - `11_concoct_binning.sh`: generates differential scaffold-coverage tables from the selected cross-sample BAM files and performs per-assembly genome binning using CONCOCT v1.1.0 with 10-kb subcontigs.
+- `12_prepare_bins_for_das_tool.sh`: standardizes MetaBAT2, MaxBin2 and CONCOCT bin names and generates the corresponding contig-to-bin tables required by DAS Tool.
