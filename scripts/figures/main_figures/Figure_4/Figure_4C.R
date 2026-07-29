@@ -6,8 +6,7 @@
 # across peatlands and depth layers.
 #
 # A common set of activity thresholds is calculated from the pooled positive
-# MetaG and MetaT values. MetaT depths without a corresponding sample are
-# displayed as not determined.
+# MetaG and MetaT values.
 #
 # INPUT
 # 1. MetaT EET-gene table.
