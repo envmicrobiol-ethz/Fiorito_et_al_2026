@@ -1,4 +1,4 @@
-# Figure 1
+## Scripts Figure 1
 
 Scripts used to generate the individual panels of Figure 1.
 
