@@ -1,5 +1,4 @@
-# ED Figure 1
-
+## Scripts
 Scripts used to generate the individual panels of ED Figure 1.
 
 
