@@ -24,3 +24,4 @@
 - `19_dram_mag_annotation.sh`: performs functional annotation and metabolic distillation of the species-level dereplicated MAGs using DRAM v1.5.0, GTDB-Tk taxonomy and dRep CheckM quality estimates.
 - `20_metabolic_mag_annotation.sh`: identifies metabolic and biogeochemical-cycle traits in the 1,081 species-level dereplicated MAGs using METABOLIC-G v4.0.
 - `21_interproscan_mag_annotations.sh`: runs InterProScan on DRAM-predicted proteins from a selected MAG list and generates a combined protein-domain annotation table containing GTDB-Tk taxonomy.
+-  `22_mash_metagenomic_read_comparison.sh`: compares metagenomic read datasets from Värmland, Stordalen Mire and SPRUCE using Mash v2.1 with a sketch size of 10,000 and a minimum k-mer multiplicity of two.
