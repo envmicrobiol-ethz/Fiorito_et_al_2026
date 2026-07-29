@@ -4,7 +4,6 @@ This repository contains bioinformatic analyses and figure-generation scripts fo
 
 ## Repository structure
 
-- `scripts/`: scripts used for the bioinformatic analyses described in the Methods
-- `R_figure_scripts/`: R scripts used to generate the main and extended data/supplementary information figures
+- `scripts/`: scripts used for the bioinformatic analyses described in the Methods and to generate the main and extended data/supplementary information figures
 
 Detailed information about each workflow is provided in the README file within the corresponding directory.
