@@ -17,3 +17,5 @@
 - `13_das_tool_bin_selection.sh`: integrates the MetaBAT2, MaxBin2 and CONCOCT results and selects non-redundant genome bins for each assembly using DAS Tool v1.1.7.
 - `14_drep_species_level_dereplication.sh`: collects DAS Tool-selected bins, assigns unique sample-prefixed filenames and performs species-level dereplication using dRep v3.4.5 with 95% primary and secondary ANI thresholds, ≥50% completeness and ≤10% contamination.
 - `15_checkm2_quality_assessment.sh`: estimates completeness and contamination of the 1,081 species-level dereplicated MAGs using CheckM2 v1.0.2.
+- `16a_gtdbtk_R220_taxonomic_classification.sh`: assigns taxonomy to the 1,081 species-level dereplicated MAGs using GTDB-Tk v2.4.0 and GTDB release R220.
+- `16b_gtdbtk_R232_taxonomic_classification.sh`: updates the taxonomic classification of the 1,081 species-level dereplicated MAGs using GTDB-Tk v2.7.2 and GTDB release R232.
