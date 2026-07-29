@@ -6,3 +6,4 @@
 - `04_metaspades_assembly.sh`: assembles cleaned paired-end metagenomic reads for each sample using metaSPAdes with k-mer sizes 21, 33, 55, 77, 99 and 127.
 - `05a_bbmap_assembly_stats.sh`: calculates per-sample metaSPAdes assembly statistics using BBMap `stats.sh`.
 - `05b_seqkit_assembly_stats.sh`: calculates per-sample metaSPAdes assembly statistics using SeqKit.
+- `06_filter_scaffolds_min1000.sh`: removes scaffolds shorter than 1,000 nucleotides from each metaSPAdes assembly using BBMap `reformat.sh`.
