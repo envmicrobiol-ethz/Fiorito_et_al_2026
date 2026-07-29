@@ -32,7 +32,7 @@ set -euo pipefail
 # for each assembly–read combination.
 #
 # USAGE
-# sbatch 08_multimapping_reads_to_assemblies.sh \
+# sbatch 08_generate_differential_coverage_profiles.sh \
 #   assembly_sample \
 #   08_multimapping_design.tsv \
 #   filtered_assemblies_directory \
