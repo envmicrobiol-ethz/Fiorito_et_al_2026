@@ -3,10 +3,6 @@
 ###############################################################################
 # FIGURE 1A — GASES AND TERMINAL ELECTRON ACCEPTORS
 #
-# Dashes or blank cells in the source table are encoded as NA and are removed
-# before plotting. They are never converted to zero. Genuine measured values
-# close to zero are retained.
-#
 # Usage:
 #   Rscript 01_Figure1A_gases_and_terminal_electron_acceptors.R [output_dir]
 ###############################################################################
