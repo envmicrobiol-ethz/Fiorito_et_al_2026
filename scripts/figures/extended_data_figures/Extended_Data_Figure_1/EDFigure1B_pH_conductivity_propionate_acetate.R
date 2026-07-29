@@ -5,14 +5,13 @@
 #
 # DESCRIPTION
 # Generates pH, conductivity, propionate and acetate depth profiles for
-# Björsmossen, Lungsmossen and Norra Romyren.
+# Björsmossen and Norra Romyren.
 #
 # INPUT
 # No external input file. Source measurements are defined below.
 #
 # OUTPUT
 # EDFigure1B_BM_pH_conductivity_propionate_acetate.svg
-# EDFigure1B_LM_pH_conductivity_propionate_acetate.svg
 # EDFigure1B_NR_pH_conductivity_propionate_acetate.svg
 #
 # USAGE
