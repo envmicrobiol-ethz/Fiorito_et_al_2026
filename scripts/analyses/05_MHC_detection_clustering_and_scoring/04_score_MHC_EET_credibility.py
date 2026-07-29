@@ -8,7 +8,7 @@
 # INPUT
 # A member-level TSV or CSV table containing MMseqs2 cluster assignments and,
 # where available, motif counts, protein lengths, PSORTb localization, PFAM
-# annotations, and normalized expression values.
+# annotations, and expression values.
 #
 # OUTPUT
 # A cluster-level TSV table with component metrics, credibility scores, and
