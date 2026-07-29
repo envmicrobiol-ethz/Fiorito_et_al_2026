@@ -3,40 +3,28 @@
 set -euo pipefail
 
 ###############################################################################
-# 16S rRNA AMPLICON PROCESSING
+# DESCRIPTION
+# Processes raw paired-end 16S rRNA amplicon reads through quality control,
+# PhiX removal, primer trimming, ASV inference, 97% OTU clustering and
+# taxonomic classification.
 #
-# This script processes raw paired-end 16S rRNA amplicon reads, including:
-#   1. Addition of sample identifiers to FASTQ headers
-#   2. Raw-read quality control
-#   3. PhiX removal
-#   4. Primer trimming
-#   5. Paired-end read merging
-#   6. Quality filtering and dereplication
-#   7. ASV inference and chimera removal
-#   8. Target verification with Metaxa2
-#   9. OTU clustering at 97% sequence identity
-#  10. ASV and OTU count-table generation
-#  11. Taxonomic classification against SILVA v138
-#
-# Input files must be named:
+# INPUT
+# Raw paired-end reads:
 #   <sample>_1.fastq.gz
 #   <sample>_2.fastq.gz
 #
-# Usage:
-#   bash 01_process_16S_amplicon_reads.sh \
-#       <raw_read_directory> \
-#       <output_directory> \
-#       <PhiX_Bowtie2_index> \
-#       <SILVA_database_fasta> \
-#       [threads]
+# PhiX Bowtie2 index and SILVA v138 reference database.
 #
-# Example:
-#   bash 01_process_16S_amplicon_reads.sh \
-#       1_raw \
-#       2_processed \
-#       /path/to/phix \
-#       /path/to/SILVA138_RESCRIPt.fasta \
-#       8
+# OUTPUT
+# Processed ASV and OTU FASTA files, abundance tables and taxonomy tables.
+#
+# USAGE
+# bash 01_process_16S_amplicon_reads.sh \
+#   raw_read_directory \
+#   output_directory \
+#   PhiX_Bowtie2_index \
+#   SILVA_database_fasta \
+#   [threads]
 ###############################################################################
 
 ###############################################################################
@@ -44,8 +32,8 @@ set -euo pipefail
 ###############################################################################
 
 if [[ $# -lt 4 || $# -gt 5 ]]; then
-    echo "Usage:"
-    echo "  bash $0 <raw_dir> <output_dir> <PhiX_index> <SILVA_fasta> [threads]"
+    echo "Usage:" >&2
+    echo "  bash $0 <raw_dir> <output_dir> <PhiX_index> <SILVA_fasta> [threads]" >&2
     exit 1
 fi
 
@@ -64,13 +52,39 @@ REVERSE_PRIMER="GGACTACHVGGGTWTCTAAT"
 
 ###############################################################################
 # SOFTWARE ENVIRONMENTS
+#
+# Environment and module names can be overridden before execution, for example:
+#   CUTADAPT_ENV=cutadapt_4.9 bash 01_process_16S_amplicon_reads.sh ...
 ###############################################################################
 
-CONDA_SH="${CONDA_SH:-/cluster/project/umbiol/software/miniconda3/etc/profile.d/conda.sh}"
+FASTQC_ENV="${FASTQC_ENV:-fastqc_0.12.1}"
+CUTADAPT_ENV="${CUTADAPT_ENV:-cutadapt_4.9}"
+METAXA_ENV="${METAXA_ENV:-metaxa_2.2.3}"
 
-FASTQC_ENV="fastqc_0.12.1"
-CUTADAPT_ENV="cutadapt_4.9"
-METAXA_ENV="metaxa_2.2.3"
+VSEARCH_MODULE="${VSEARCH_MODULE:-vsearch/2.22.1}"
+BOWTIE2_MODULE="${BOWTIE2_MODULE:-bowtie2/2.5.1}"
+SEQKIT_MODULE="${SEQKIT_MODULE:-seqkit/0.10.1}"
+
+###############################################################################
+# CONDA INITIALIZATION
+###############################################################################
+
+if [[ -z "${CONDA_SH:-}" ]]; then
+
+    if command -v conda >/dev/null 2>&1; then
+        CONDA_BASE="$(conda info --base)"
+        CONDA_SH="${CONDA_BASE}/etc/profile.d/conda.sh"
+    else
+        echo "[ERROR] Conda was not found." >&2
+        echo "Set CONDA_SH to the path of conda.sh before running the script." >&2
+        exit 1
+    fi
+fi
+
+if [[ ! -f "$CONDA_SH" ]]; then
+    echo "[ERROR] Conda initialization script not found: $CONDA_SH" >&2
+    exit 1
+fi
 
 ###############################################################################
 # INPUT VALIDATION
@@ -86,30 +100,58 @@ if [[ ! -f "$TAXONOMY_DB" ]]; then
     exit 1
 fi
 
-if [[ ! -f "$CONDA_SH" ]]; then
-    echo "[ERROR] Conda initialization script not found: $CONDA_SH" >&2
-    exit 1
-fi
-
 if ! [[ "$THREADS" =~ ^[1-9][0-9]*$ ]]; then
     echo "[ERROR] Threads must be a positive integer." >&2
     exit 1
 fi
 
-# Convert paths to absolute paths before changing directory.
-RAW_DIR="$(cd "$RAW_DIR" && pwd)"
-mkdir -p "$OUTPUT_DIR"
-OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
-TAXONOMY_DB="$(readlink -f "$TAXONOMY_DB")"
+if ! command -v module >/dev/null 2>&1; then
+    echo "[ERROR] The environment-module command was not found." >&2
+    exit 1
+fi
 
-PHIX_INDEX_DIR="$(cd "$(dirname "$PHIX_INDEX")" && pwd)"
-PHIX_INDEX="${PHIX_INDEX_DIR}/$(basename "$PHIX_INDEX")"
+PHIX_INDEX_FOUND=false
+
+for INDEX_FILE in \
+    "${PHIX_INDEX}.1.bt2" \
+    "${PHIX_INDEX}.1.bt2l"
+do
+    if [[ -f "$INDEX_FILE" ]]; then
+        PHIX_INDEX_FOUND=true
+        break
+    fi
+done
+
+if [[ "$PHIX_INDEX_FOUND" == false ]]; then
+    echo "[ERROR] Bowtie2 PhiX index not found for prefix: $PHIX_INDEX" >&2
+    exit 1
+fi
 
 ###############################################################################
-# HELPER FUNCTION
+# NORMALIZE PATHS
+###############################################################################
+
+RAW_DIR="$(cd "$RAW_DIR" && pwd)"
+
+mkdir -p "$OUTPUT_DIR"
+OUTPUT_DIR="$(cd "$OUTPUT_DIR" && pwd)"
+
+TAXONOMY_DB="$(
+    cd "$(dirname "$TAXONOMY_DB")"
+    printf "%s/%s\n" "$PWD" "$(basename "$TAXONOMY_DB")"
+)"
+
+PHIX_INDEX="$(
+    cd "$(dirname "$PHIX_INDEX")"
+    printf "%s/%s\n" "$PWD" "$(basename "$PHIX_INDEX")"
+)"
+
+###############################################################################
+# HELPER FUNCTIONS
 ###############################################################################
 
 append_labeled_fastq() {
+
     local input_file="$1"
     local sample_name="$2"
     local output_file="$3"
@@ -130,6 +172,13 @@ append_labeled_fastq() {
         ' >> "$output_file"
 }
 
+load_software_module() {
+
+    local module_name="$1"
+
+    module load "$module_name"
+}
+
 ###############################################################################
 # PREPARE COMBINED FASTQ FILES
 ###############################################################################
@@ -137,7 +186,9 @@ append_labeled_fastq() {
 echo "[INFO] Preparing combined FASTQ files."
 
 mapfile -t R1_FILES < <(
-    find "$RAW_DIR" -maxdepth 1 -type f \
+    find "$RAW_DIR" \
+        -maxdepth 1 \
+        -type f \
         \( -name "*_1.fastq.gz" -o -name "*_1.fastq" \) |
         sort
 )
@@ -150,7 +201,6 @@ fi
 RAW_R1="$OUTPUT_DIR/1.all.raw.R1.fastq"
 RAW_R2="$OUTPUT_DIR/1.all.raw.R2.fastq"
 
-# Empty existing combined files before appending.
 : > "$RAW_R1"
 : > "$RAW_R2"
 
@@ -173,8 +223,16 @@ for R1_FILE in "${R1_FILES[@]}"; do
 
     echo "[INFO] Adding sample: $SAMPLE_NAME"
 
-    append_labeled_fastq "$R1_FILE" "$SAMPLE_NAME" "$RAW_R1"
-    append_labeled_fastq "$R2_FILE" "$SAMPLE_NAME" "$RAW_R2"
+    append_labeled_fastq \
+        "$R1_FILE" \
+        "$SAMPLE_NAME" \
+        "$RAW_R1"
+
+    append_labeled_fastq \
+        "$R2_FILE" \
+        "$SAMPLE_NAME" \
+        "$RAW_R2"
+
 done
 
 cd "$OUTPUT_DIR"
@@ -195,7 +253,7 @@ fastqc \
 
 conda deactivate
 
-module load stack/.2024-06-silent gcc/12.2.0 vsearch/2.22.1
+load_software_module "$VSEARCH_MODULE"
 
 vsearch \
     --fastq_eestats 1.all.raw.R1.fastq \
@@ -211,7 +269,7 @@ vsearch \
 
 echo "[INFO] Removing PhiX reads."
 
-module load stack/.2024-06-silent gcc/12.2.0 bowtie2/2.5.1-u2j3omo
+load_software_module "$BOWTIE2_MODULE"
 
 bowtie2 \
     -x "$PHIX_INDEX" \
@@ -253,7 +311,7 @@ conda deactivate
 
 echo "[INFO] Merging paired-end reads."
 
-module load stack/.2024-06-silent gcc/12.2.0 vsearch/2.22.1
+load_software_module "$VSEARCH_MODULE"
 
 vsearch \
     --fastq_mergepairs 3.all.trim.R1.fastq \
@@ -350,7 +408,7 @@ mv \
     8.all.ASV_metaxa.extraction.tmp.fasta \
     8.all.ASV_metaxa.extraction.fasta
 
-module load stack/.2024-06-silent gcc/12.2.0 seqkit/0.10.1
+load_software_module "$SEQKIT_MODULE"
 
 seqkit sort \
     --by-name \
@@ -364,7 +422,7 @@ seqkit sort \
 
 echo "[INFO] Clustering ASVs into OTUs at 97% sequence identity."
 
-module load stack/.2024-06-silent gcc/12.2.0 vsearch/2.22.1
+load_software_module "$VSEARCH_MODULE"
 
 vsearch \
     --cluster_size 8.all.ASV_metaxa.fasta \
@@ -525,7 +583,7 @@ vsearch \
 
 echo "[INFO] Calculating final ASV and OTU sequence statistics."
 
-module load stack/.2024-06-silent gcc/12.2.0 seqkit/0.10.1
+load_software_module "$SEQKIT_MODULE"
 
 seqkit stats \
     8.all.ASV_metaxa.fasta \
