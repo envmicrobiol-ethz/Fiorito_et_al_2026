@@ -10,4 +10,4 @@ This repository contains bioinformatic analyses and figure-generation scripts fo
     
   - `figures/`: scripts for generating figures
 
-Detailed information about each workflow is provided in the README file within the corresponding directory.
+Detailed information about each workflow is provided in the README file within each directory.
