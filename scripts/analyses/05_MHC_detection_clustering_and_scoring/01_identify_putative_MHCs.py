@@ -1,26 +1,28 @@
 #!/usr/bin/env python3
 
 # DESCRIPTION
-# Identifies putative multiheme cytochromes from predicted protein FASTA files.
+# Identifies putative multiheme cytochromes in predicted protein sequences
+# from the metagenomic assemblies, MAGs and electroactive reference genomes
+# analysed in Fiorito et al. (2026).
+#
+# Proteins containing at least three occurrences of one of the following
+# motif types are retained as candidate MHCs:
+# CXXCH, CXXCX0-70H or CX1-70CH.
 #
 # INPUT
-# A directory containing protein FASTA files generated from MAGs, reference
-# genomes or metagenomic assemblies, for example using Prodigal.
+# A directory containing protein FASTA files generated with Prodigal from:
+#   1. metagenomic assemblies;
+#   2. dereplicated MAGs; or
+#   3. reference genomes of electroactive microorganisms.
 #
 # OUTPUT
-# Tables and FASTA files containing all motif-bearing proteins and proteins
-# with at least three motifs of the same type.
+# TSV and FASTA files containing all motif-bearing proteins, candidate MHCs
+# with at least three motifs of the same type, and per-source summary counts.
 #
 # USAGE
 # python3 01_identify_putative_MHCs.py \
 #   predicted_proteins_directory \
 #   output_directory
-#
-# Optional recursive search:
-# python3 01_identify_putative_MHCs.py \
-#   predicted_proteins_directory \
-#   output_directory \
-#   --recursive
 
 import argparse
 import csv
