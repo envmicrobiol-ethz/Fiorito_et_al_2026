@@ -6,4 +6,4 @@
 
 - `03_build_MHC_or_porin_protein_phylogeny.sh`: aligns selected MHC or porin homologs with MAFFT L-INS-i, trims the alignment with trimAl and infers a maximum-likelihood phylogeny with IQ-TREE 3 using ModelFinder and 1,000 ultrafast bootstrap replicates.
 
-- `04_build_McrA_phylogeny.py`: identifies McrA candidates in proteins predicted from 1,081 dereplicated MAGs and assembled contigs from 32 metagenomes, applies reference-calibrated HMM score and coverage thresholds, collapses exact amino-acid duplicates while retaining source provenance, adds the resulting sequences to a published McrA reference alignment and infers a maximum-likelihood phylogeny using MAFFT, trimAl and IQ-TREE 3.
+- `04_build_McrA_phylogeny.py`: identifies McrA candidates in proteins predicted from 1,081 dereplicated MAGs and assembled contigs from 32 metagenomes, applies reference-calibrated HMM score and coverage thresholds, collapses exact amino-acid duplicates while retaining source provenance, adds the resulting sequences to a published McrA reference alignment and infers a maximum-likelihood phylogeny using MAFFT, trimAl and IQ-TREE.
