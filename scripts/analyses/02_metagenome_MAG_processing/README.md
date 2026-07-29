@@ -7,3 +7,4 @@
 - `05a_bbmap_assembly_stats.sh`: calculates per-sample metaSPAdes assembly statistics using BBMap `stats.sh`.
 - `05b_seqkit_assembly_stats.sh`: calculates per-sample metaSPAdes assembly statistics using SeqKit.
 - `06_filter_scaffolds_min1000.sh`: removes scaffolds shorter than 1,000 nucleotides from each metaSPAdes assembly using BBMap `reformat.sh`.
+- `07_predict_genes_with_prodigal.sh`: predicts protein-coding genes from scaffolds ≥1,000 nucleotides using Prodigal v2.6.3 in metagenomic mode.
