@@ -11,3 +11,5 @@
 - `08_differential_coverage_mapping_design.tsv`: defines the cross-sample read-to-assembly combinations used to generate differential scaffold-coverage profiles for genome binning.
 - `08_generate_differential_coverage_profiles.sh`: maps selected cleaned metagenomic read sets to each filtered assembly using BBMap and produces sorted, indexed BAM files and scaffold-coverage profiles for differential-coverage binning.
 - `09_metabat2_binning.sh`: generates differential scaffold-depth profiles from the selected cross-sample BAM files and performs per-assembly genome binning using MetaBAT2 v2.17.
+- `10_maxbin2_binning.sh`: extracts all sample-specific scaffold-coverage profiles from the MetaBAT2 depth tables and performs per-assembly genome binning using MaxBin2 v2.2.7.
+- `11_concoct_binning.sh`: generates differential scaffold-coverage tables from the selected cross-sample BAM files and performs per-assembly genome binning using CONCOCT v1.1.0 with 10-kb subcontigs.
