@@ -1,4 +1,4 @@
-## Scripts
+## Scripts Figure 2
 
 - `a_Figure_2_contig_level.R`: generates the contig-level metatranscriptomic functional heatmap from KEGG and METABOLIC MT_coverage_per_cell profiles.
 
