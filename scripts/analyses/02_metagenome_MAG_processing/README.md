@@ -16,3 +16,4 @@
 - `12_prepare_bins_for_das_tool.sh`: standardizes MetaBAT2, MaxBin2 and CONCOCT bin names and generates the corresponding contig-to-bin tables required by DAS Tool.
 - `13_das_tool_bin_selection.sh`: integrates the MetaBAT2, MaxBin2 and CONCOCT results and selects non-redundant genome bins for each assembly using DAS Tool v1.1.7.
 - `14_drep_species_level_dereplication.sh`: collects DAS Tool-selected bins, assigns unique sample-prefixed filenames and performs species-level dereplication using dRep v3.4.5 with 95% primary and secondary ANI thresholds, ≥50% completeness and ≤10% contamination.
+- `15_checkm2_quality_assessment.sh`: estimates completeness and contamination of the 1,081 species-level dereplicated MAGs using CheckM2 v1.0.2.
