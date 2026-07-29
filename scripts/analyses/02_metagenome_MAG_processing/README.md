@@ -21,3 +21,4 @@
 - `16b_gtdbtk_R232_taxonomic_classification.sh`: updates the taxonomic classification of the 1,081 species-level dereplicated MAGs using GTDB-Tk v2.7.2 and GTDB release R232.
 - `17_gtdbtk_ani_rep_HQ_MAGs_R220_R232.sh`: compares the high-quality MAG subset against GTDB representative genomes using GTDB-Tk `ani_rep` with releases R220 and R232.
 - `18_coverm_mag_abundance.sh`: estimates the abundance of the 1,081 species-level dereplicated MAGs in each metagenomic sample using CoverM v0.6.1.
+- `19_dram_mag_annotation.sh`: performs functional annotation and metabolic distillation of the species-level dereplicated MAGs using DRAM v1.5.0, GTDB-Tk taxonomy and dRep CheckM quality estimates.
