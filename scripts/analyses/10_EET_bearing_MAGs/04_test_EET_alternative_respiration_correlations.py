@@ -16,7 +16,7 @@
 # and QC files.
 #
 # USAGE
-# python3 12_test_EET_alternative_respiration_correlations.py \
+# python3 04_test_EET_alternative_respiration_correlations.py \
 #   analysis_output_directory
 
 from pathlib import Path
