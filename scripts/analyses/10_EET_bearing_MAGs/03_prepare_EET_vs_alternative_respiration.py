@@ -16,7 +16,7 @@
 # coexpression summary, MAG-level summary and QC files.
 #
 # USAGE
-# python3 11_prepare_EET_vs_alternative_respiration.py \
+# python3 03_prepare_EET_vs_alternative_respiration.py \
 #   analysis_output_directory
 
 from pathlib import Path
