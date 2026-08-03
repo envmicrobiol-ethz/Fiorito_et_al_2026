@@ -1,0 +1,764 @@
+#!/usr/bin/env python3
+
+# DESCRIPTION
+# Builds refined pathway-expression tables and tests per-MAG Spearman
+# correlations between EET expression and alternative respiratory pathways.
+#
+# INPUT
+# Analysis directory containing:
+#   01_selected_markers_expression_by_MAG_sample.tsv
+#   08_EET_machinery_expression_by_MAG_sample.tsv
+#
+# OUTPUT
+# Refined pathway tables, per-MAG pathway correlations, heatmap matrices
+# and QC files.
+#
+# USAGE
+# python3 12_test_EET_alternative_respiration_correlations.py \
+#   analysis_output_directory
+
+from pathlib import Path
+import argparse
+import sys
+
+import numpy as np
+import pandas as pd
+from scipy.stats import spearmanr
+
+
+OUT_DIR = None
+MARKER_FILE = None
+EET_FILE = None
+
+MIN_SAMPLES_FOR_CORRELATION = 8
+
+
+###############################################################################
+# REFINED PATHWAY DEFINITIONS
+###############################################################################
+
+# IMPORTANT:
+# - pathway_is_expressed = at least one marker in the pathway has MT > 0
+# - pathway_max_MT_coverage_per_cell = maximum MT among pathway markers
+# - pathway_sum_MT_coverage_per_cell = sum MT among pathway markers
+#
+# Primary analysis includes competing respiration plus hydrogenases (requested).
+# Context pathways are still written out, but flagged as non-primary.
+
+REFINED_PATHWAYS = [
+    {
+        "refined_pathway": "O2_aa3_cytochrome_c_oxidase",
+        "member_gene_labels": {"coxA", "coxB"},
+        "primary_analysis": True,
+        "pathway_class": "oxygen_respiration",
+    },
+    {
+        "refined_pathway": "O2_cbb3_cytochrome_c_oxidase",
+        "member_gene_labels": {"ccoN", "ccoO", "ccoP"},
+        "primary_analysis": True,
+        "pathway_class": "oxygen_respiration",
+    },
+    {
+        "refined_pathway": "O2_cyo_ubiquinol_oxidase",
+        "member_gene_labels": {"cyoA", "cyoB", "cyoC", "cyoD"},
+        "primary_analysis": True,
+        "pathway_class": "oxygen_respiration",
+    },
+    {
+        "refined_pathway": "O2_cyd_bd_oxidase",
+        "member_gene_labels": {"cydA", "cydB"},
+        "primary_analysis": True,
+        "pathway_class": "oxygen_respiration",
+    },
+    {
+        "refined_pathway": "Aromatics_benzoylCoA_reductase",
+        "member_gene_labels": {"bcrA", "bcrB", "bcrC", "bcrD"},
+        "primary_analysis": False,
+        "pathway_class": "context_energy_metabolism",
+    },
+    {
+        "refined_pathway": "N_nar_nxr_like_complex",
+        "member_gene_labels": {"narG", "narH", "nxrA", "nxrB", "nxrA/narG", "nxrB/narH"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nap_periplasmic_nitrate_reduction",
+        "member_gene_labels": {"napA", "napB"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nrf_DNRA",
+        "member_gene_labels": {"nrfA", "nrfH"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nirB_nitrite_reduction",
+        "member_gene_labels": {"nirB"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nirK_nirS_NO_forming_nitrite_reduction",
+        "member_gene_labels": {"nirK", "nirS"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nor_nitric_oxide_reduction",
+        "member_gene_labels": {"norB", "norC"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "N_nos_nitrous_oxide_reduction",
+        "member_gene_labels": {"nosZ", "nosD"},
+        "primary_analysis": True,
+        "pathway_class": "nitrogen_respiration",
+    },
+    {
+        "refined_pathway": "S_dsr_sulfite_reduction",
+        "member_gene_labels": {"dsrA", "dsrB", "dsrD"},
+        "primary_analysis": True,
+        "pathway_class": "sulfur_respiration",
+    },
+    {
+        "refined_pathway": "S_asr_sulfite_reduction",
+        "member_gene_labels": {"asrA", "asrB", "asrC"},
+        "primary_analysis": True,
+        "pathway_class": "sulfur_respiration",
+    },
+    {
+        "refined_pathway": "S_apr_adenylylsulfate_reduction",
+        "member_gene_labels": {"aprA"},
+        "primary_analysis": True,
+        "pathway_class": "sulfur_respiration",
+    },
+    {
+        "refined_pathway": "S_dmsA_DMSO_reduction",
+        "member_gene_labels": {"dmsA"},
+        "primary_analysis": True,
+        "pathway_class": "sulfur_respiration",
+    },
+    {
+        "refined_pathway": "S_phsA_thiosulfate_polysulfide_reduction",
+        "member_gene_labels": {"phsA"},
+        "primary_analysis": True,
+        "pathway_class": "sulfur_respiration",
+    },
+    {
+        "refined_pathway": "Cl_chlorate_reduction",
+        "member_gene_labels": {"ClrB"},
+        "primary_analysis": True,
+        "pathway_class": "other_terminal_respiration",
+    },
+    {
+        "refined_pathway": "Se_selenate_reduction",
+        "member_gene_labels": {"ygfM", "xdhD", "YgfK"},
+        "primary_analysis": True,
+        "pathway_class": "other_terminal_respiration",
+    },
+    {
+        "refined_pathway": "As_arsenate_reduction",
+        "member_gene_labels": {"arsC (grx)", "arsC (trx)"},
+        "primary_analysis": False,
+        "pathway_class": "detoxification_not_primary",
+    },
+    {
+        "refined_pathway": "F_fumarate_reduction",
+        "member_gene_labels": {"frdA", "frdB", "frdC", "frdD"},
+        "primary_analysis": True,
+        "pathway_class": "other_terminal_respiration",
+    },
+    {
+        "refined_pathway": "H_hydrogenases",
+        "member_gene_labels": {
+            "fefe-group-a13",
+            "fefe-group-a2",
+            "fefe-group-a4",
+            "fefe-group-b",
+            "fefe-group-c2",
+            "fefe-group-c3",
+            "nife-group-1",
+            "nife-group-2bc",
+            "nife-group-3abd",
+            "nife-group-3c",
+            "nife-group-4a-g",
+        },
+        "primary_analysis": True,
+        "pathway_class": "hydrogen_metabolism",
+    },
+]
+
+
+###############################################################################
+# INPUT READING
+###############################################################################
+
+def read_marker_table():
+    required = {
+        "MAG_name",
+        "EET_groups",
+        "metabolic_module",
+        "gene_label",
+        "feature_source",
+        "feature_accession",
+        "MetaT_sample",
+        "MT_coverage_per_cell",
+        "marker_is_expressed",
+    }
+
+    markers = pd.read_csv(MARKER_FILE, sep="\t", low_memory=False)
+
+    missing = required - set(markers.columns)
+    if missing:
+        raise RuntimeError(
+            f"Missing columns in {MARKER_FILE}: {sorted(missing)}"
+        )
+
+    markers["gene_label"] = markers["gene_label"].astype(str).str.strip()
+
+    markers["MT_coverage_per_cell"] = pd.to_numeric(
+        markers["MT_coverage_per_cell"],
+        errors="coerce",
+    )
+
+    if markers["MT_coverage_per_cell"].isna().any():
+        bad = markers[markers["MT_coverage_per_cell"].isna()]
+        bad.to_csv(
+            OUT_DIR / "QC_refined_non_numeric_marker_expression.tsv",
+            sep="\t",
+            index=False,
+        )
+        raise RuntimeError("Non-numeric MT values in marker table.")
+
+    return markers
+
+
+def read_eet_table():
+    required = {
+        "MAG_name",
+        "EET_group",
+        "MetaT_sample",
+        "mean_gene_MT_coverage_per_cell",
+        "EET_machinery_is_expressed",
+    }
+
+    eet = pd.read_csv(EET_FILE, sep="\t", low_memory=False)
+
+    missing = required - set(eet.columns)
+    if missing:
+        raise RuntimeError(
+            f"Missing columns in {EET_FILE}: {sorted(missing)}"
+        )
+
+    eet["mean_gene_MT_coverage_per_cell"] = pd.to_numeric(
+        eet["mean_gene_MT_coverage_per_cell"],
+        errors="coerce",
+    )
+
+    bool_series = (
+        eet["EET_machinery_is_expressed"]
+        .astype(str)
+        .str.strip()
+        .str.lower()
+        .map({"true": True, "false": False})
+    )
+    if bool_series.isna().any():
+        raise RuntimeError(
+            "Invalid EET_machinery_is_expressed values."
+        )
+    eet["EET_machinery_is_expressed"] = bool_series
+
+    return eet
+
+
+###############################################################################
+# REFINED PATHWAY TABLES
+###############################################################################
+
+def build_mapping_table():
+    rows = []
+    for record in REFINED_PATHWAYS:
+        for member in sorted(record["member_gene_labels"]):
+            rows.append(
+                {
+                    "refined_pathway": record["refined_pathway"],
+                    "member_gene_label": member,
+                    "primary_analysis": record["primary_analysis"],
+                    "pathway_class": record["pathway_class"],
+                }
+            )
+
+    mapping = pd.DataFrame(rows)
+    mapping.to_csv(
+        OUT_DIR / "18_refined_pathway_mapping.tsv",
+        sep="\t",
+        index=False,
+    )
+    return mapping
+
+
+def assign_refined_pathways(markers, mapping):
+    assigned = markers.merge(
+        mapping,
+        left_on="gene_label",
+        right_on="member_gene_label",
+        how="inner",
+        validate="many_to_many",
+    ).copy()
+
+    if assigned.empty:
+        raise RuntimeError(
+            "No marker rows matched the refined pathway mapping."
+        )
+
+    assigned.to_csv(
+        OUT_DIR / "19_refined_marker_rows.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return assigned
+
+
+def build_refined_pathway_by_MAG_sample(assigned):
+    grouping = [
+        "MAG_name",
+        "EET_groups",
+        "MetaT_sample",
+        "refined_pathway",
+        "primary_analysis",
+        "pathway_class",
+    ]
+
+    refined = (
+        assigned
+        .groupby(grouping, as_index=False, dropna=False)
+        .agg(
+            n_marker_rows=("gene_label", "size"),
+            n_unique_markers=("gene_label", "nunique"),
+            n_expressed_markers=("marker_is_expressed", "sum"),
+            sum_MT_coverage_per_cell=("MT_coverage_per_cell", "sum"),
+            max_MT_coverage_per_cell=("MT_coverage_per_cell", "max"),
+            mean_MT_coverage_per_cell=("MT_coverage_per_cell", "mean"),
+            median_MT_coverage_per_cell=("MT_coverage_per_cell", "median"),
+            marker_list=("gene_label", lambda x: ";".join(sorted(set(x)))),
+            expressed_marker_list=(
+                "gene_label",
+                lambda x: ";".join(sorted(set(x)))
+            ),
+        )
+    )
+
+    # Recompute expressed marker list properly
+    expressed_lists = (
+        assigned[assigned["MT_coverage_per_cell"] > 0]
+        .groupby(
+            ["MAG_name", "MetaT_sample", "refined_pathway"]
+        )["gene_label"]
+        .apply(lambda values: ";".join(sorted(set(values))))
+        .rename("expressed_marker_list")
+        .reset_index()
+    )
+
+    refined = refined.drop(columns="expressed_marker_list").merge(
+        expressed_lists,
+        on=["MAG_name", "MetaT_sample", "refined_pathway"],
+        how="left",
+        validate="one_to_one",
+    )
+
+    refined["expressed_marker_list"] = (
+        refined["expressed_marker_list"].fillna("")
+    )
+    refined["pathway_is_expressed"] = refined["n_expressed_markers"] > 0
+
+    refined = refined.sort_values(
+        ["EET_groups", "MAG_name", "MetaT_sample", "refined_pathway"]
+    )
+
+    refined.to_csv(
+        OUT_DIR / "20_refined_pathway_expression_by_MAG_sample_observed.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return refined
+
+
+def build_pathway_universe(refined_observed, eet):
+    universe = (
+        refined_observed[refined_observed["primary_analysis"]]
+        .groupby(
+            ["MAG_name", "refined_pathway", "pathway_class"],
+            as_index=False,
+        )
+        .agg(
+            n_samples_with_observed_row=("MetaT_sample", "nunique"),
+            n_samples_with_expression=("pathway_is_expressed", "sum"),
+            n_unique_markers=("n_unique_markers", "max"),
+            marker_list=("marker_list", "first"),
+        )
+    )
+
+    # Only keep pathways represented in MAGs that are in the EET table.
+    universe = universe[
+        universe["MAG_name"].isin(set(eet["MAG_name"]))
+    ].copy()
+
+    universe.to_csv(
+        OUT_DIR / "21_refined_pathway_universe_by_MAG.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return universe
+
+
+def build_complete_refined_grid(eet, refined_observed, universe):
+    eet_keys = eet[
+        [
+            "MAG_name",
+            "EET_group",
+            "MetaT_sample",
+            "mean_gene_MT_coverage_per_cell",
+            "EET_machinery_is_expressed",
+        ]
+    ].drop_duplicates()
+
+    grid = eet_keys.merge(
+        universe,
+        on="MAG_name",
+        how="inner",
+        validate="many_to_many",
+    )
+
+    observed = refined_observed[
+        refined_observed["primary_analysis"]
+    ][
+        [
+            "MAG_name",
+            "MetaT_sample",
+            "refined_pathway",
+            "n_expressed_markers",
+            "sum_MT_coverage_per_cell",
+            "max_MT_coverage_per_cell",
+            "mean_MT_coverage_per_cell",
+            "median_MT_coverage_per_cell",
+            "pathway_is_expressed",
+            "expressed_marker_list",
+        ]
+    ].copy()
+
+    merged = grid.merge(
+        observed,
+        on=["MAG_name", "MetaT_sample", "refined_pathway"],
+        how="left",
+        validate="one_to_one",
+        indicator="merge_status",
+    )
+
+    merged["row_was_observed"] = merged["merge_status"] == "both"
+    merged = merged.drop(columns="merge_status")
+
+    fill_zero_columns = [
+        "n_expressed_markers",
+        "sum_MT_coverage_per_cell",
+        "max_MT_coverage_per_cell",
+        "mean_MT_coverage_per_cell",
+        "median_MT_coverage_per_cell",
+    ]
+    for column in fill_zero_columns:
+        merged[column] = pd.to_numeric(
+            merged[column],
+            errors="coerce",
+        ).fillna(0)
+
+    merged["pathway_is_expressed"] = merged["n_expressed_markers"] > 0
+    merged["expressed_marker_list"] = (
+        merged["expressed_marker_list"].fillna("")
+    )
+
+    merged = merged.rename(
+        columns={
+            "mean_gene_MT_coverage_per_cell": "EET_expression",
+        }
+    )
+
+    merged["log1p_EET_expression"] = np.log1p(merged["EET_expression"])
+    merged["log1p_pathway_max_expression"] = np.log1p(
+        merged["max_MT_coverage_per_cell"]
+    )
+    merged["pathway_presence_binary"] = (
+        merged["pathway_is_expressed"].astype(int)
+    )
+
+    merged = merged.sort_values(
+        ["EET_group", "MAG_name", "MetaT_sample", "refined_pathway"]
+    )
+
+    merged.to_csv(
+        OUT_DIR / "22_refined_EET_vs_pathway_long.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return merged
+
+
+###############################################################################
+# CORRELATIONS
+###############################################################################
+
+def eligible_spearman(x, y):
+    x = pd.to_numeric(pd.Series(x), errors="coerce")
+    y = pd.to_numeric(pd.Series(y), errors="coerce")
+
+    valid = x.notna() & y.notna()
+    x = x[valid].to_numpy(dtype=float)
+    y = y[valid].to_numpy(dtype=float)
+
+    if len(x) < MIN_SAMPLES_FOR_CORRELATION:
+        return np.nan, np.nan, False, "fewer_than_minimum_samples"
+
+    if np.unique(x).size < 2:
+        return np.nan, np.nan, False, "no_variation_in_EET_expression"
+
+    if np.unique(y).size < 2:
+        return np.nan, np.nan, False, "no_variation_in_pathway_outcome"
+
+    result = spearmanr(x, y)
+
+    return float(result.statistic), float(result.pvalue), True, ""
+
+
+def build_per_MAG_pathway_correlations(refined_long):
+    rows = []
+
+    for (mag_name, eet_group, pathway), group in refined_long.groupby(
+        ["MAG_name", "EET_group", "refined_pathway"]
+    ):
+        base = {
+            "MAG_name": mag_name,
+            "EET_group": eet_group,
+            "refined_pathway": pathway,
+            "pathway_class": group["pathway_class"].iloc[0],
+            "n_samples": int(group["MetaT_sample"].nunique()),
+            "n_samples_EET_expressed": int(
+                group["EET_machinery_is_expressed"].sum()
+            ),
+            "n_samples_pathway_expressed": int(
+                group["pathway_is_expressed"].sum()
+            ),
+            "n_unique_markers": int(group["n_unique_markers"].iloc[0]),
+            "marker_list": group["marker_list"].iloc[0],
+        }
+
+        for outcome_column, outcome_label in [
+            ("pathway_presence_binary", "pathway_presence_binary"),
+            ("max_MT_coverage_per_cell", "pathway_max_MT_coverage_per_cell"),
+            ("sum_MT_coverage_per_cell", "pathway_sum_MT_coverage_per_cell"),
+        ]:
+            rho, p_value, eligible, reason = eligible_spearman(
+                group["EET_expression"],
+                group[outcome_column],
+            )
+
+            row = dict(base)
+            row.update(
+                {
+                    "outcome": outcome_label,
+                    "rho": rho,
+                    "spearman_p_value": p_value,
+                    "eligible_for_heatmap": eligible,
+                    "exclusion_reason": reason,
+                }
+            )
+            rows.append(row)
+
+    output = pd.DataFrame(rows)
+    output.to_csv(
+        OUT_DIR / "23_refined_per_MAG_pathway_correlations.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return output
+
+
+###############################################################################
+# HEATMAP MATRICES FOR R
+###############################################################################
+
+def build_heatmap_matrices(correlations, outcome_label):
+    subset = correlations[
+        correlations["outcome"] == outcome_label
+    ].copy()
+
+    rho = subset.pivot_table(
+        index="MAG_name",
+        columns="refined_pathway",
+        values="rho",
+        aggfunc="first",
+    )
+
+    pvalue = subset.pivot_table(
+        index="MAG_name",
+        columns="refined_pathway",
+        values="spearman_p_value",
+        aggfunc="first",
+    )
+
+    eligible = subset.pivot_table(
+        index="MAG_name",
+        columns="refined_pathway",
+        values="eligible_for_heatmap",
+        aggfunc="first",
+    )
+
+    mag_groups = (
+        subset[["MAG_name", "EET_group"]]
+        .drop_duplicates()
+        .set_index("MAG_name")
+    )
+
+    rho = mag_groups.join(rho).reset_index()
+    pvalue = mag_groups.join(pvalue).reset_index()
+    eligible = mag_groups.join(eligible).reset_index()
+
+    if outcome_label == "pathway_presence_binary":
+        tag = "presence"
+    elif outcome_label == "pathway_max_MT_coverage_per_cell":
+        tag = "max_expression"
+    else:
+        tag = "sum_expression"
+
+    rho.to_csv(
+        OUT_DIR / f"24_heatmap_matrix_rho_{tag}.tsv",
+        sep="\t",
+        index=False,
+    )
+    pvalue.to_csv(
+        OUT_DIR / f"25_heatmap_matrix_pvalue_{tag}.tsv",
+        sep="\t",
+        index=False,
+    )
+    eligible.to_csv(
+        OUT_DIR / f"26_heatmap_matrix_eligible_{tag}.tsv",
+        sep="\t",
+        index=False,
+    )
+
+    return rho, pvalue, eligible
+
+
+
+def parse_args():
+    parser = argparse.ArgumentParser(
+        description=(
+            "Test per-MAG correlations between EET expression and "
+            "alternative respiratory pathways."
+        )
+    )
+    parser.add_argument(
+        "analysis_directory",
+        type=Path,
+    )
+    return parser.parse_args()
+
+
+###############################################################################
+# MAIN
+###############################################################################
+
+def main():
+    global OUT_DIR
+    global MARKER_FILE
+    global EET_FILE
+
+    args = parse_args()
+
+    OUT_DIR = args.analysis_directory
+    MARKER_FILE = (
+        OUT_DIR / "01_selected_markers_expression_by_MAG_sample.tsv"
+    )
+    EET_FILE = (
+        OUT_DIR / "08_EET_machinery_expression_by_MAG_sample.tsv"
+    )
+
+    markers = read_marker_table()
+    eet = read_eet_table()
+
+    mapping = build_mapping_table()
+    assigned = assign_refined_pathways(markers, mapping)
+    refined_observed = build_refined_pathway_by_MAG_sample(assigned)
+    universe = build_pathway_universe(refined_observed, eet)
+    refined_long = build_complete_refined_grid(
+        eet,
+        refined_observed,
+        universe,
+    )
+    correlations = build_per_MAG_pathway_correlations(refined_long)
+
+    build_heatmap_matrices(
+        correlations,
+        "pathway_presence_binary",
+    )
+    build_heatmap_matrices(
+        correlations,
+        "pathway_max_MT_coverage_per_cell",
+    )
+    build_heatmap_matrices(
+        correlations,
+        "pathway_sum_MT_coverage_per_cell",
+    )
+
+    pathway_counts = (
+        universe["refined_pathway"].value_counts().sort_index()
+    )
+    pathway_counts.to_csv(
+        OUT_DIR / "27_refined_pathway_counts_by_MAG.tsv",
+        sep="\t",
+        header=["n_MAGs_represented"],
+    )
+
+    qc_lines = [
+        f"EET MAGs in refined analysis: {eet['MAG_name'].nunique()}",
+        f"MetaT samples in refined analysis: {eet['MetaT_sample'].nunique()}",
+        (
+            "Primary refined pathways retained: "
+            f"{universe['refined_pathway'].nunique()}"
+        ),
+        f"Observed refined pathway rows: {len(refined_observed)}",
+        f"Complete refined long rows: {len(refined_long)}",
+        f"Per-MAG pathway correlation rows: {len(correlations)}",
+        (
+            "Correlation eligibility minimum samples: "
+            f"{MIN_SAMPLES_FOR_CORRELATION}"
+        ),
+        (
+            "MAGs with at least one refined pathway represented: "
+            f"{universe['MAG_name'].nunique()}"
+        ),
+    ]
+
+    (OUT_DIR / "QC_refined_pathway_analysis_summary.txt").write_text(
+        "\n".join(qc_lines) + "\n"
+    )
+
+    print("\n[COMPLETED]")
+    for line in qc_lines:
+        print(f"  {line}")
+
+    print(f"\nOutputs written to:\n  {OUT_DIR}")
+
+
+if __name__ == "__main__":
+    try:
+        main()
+    except Exception as error:
+        print(f"\n[ERROR] {error}", file=sys.stderr)
+        sys.exit(1)
