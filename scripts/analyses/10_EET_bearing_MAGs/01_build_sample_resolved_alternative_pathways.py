@@ -16,7 +16,7 @@
 # and QC files.
 #
 # USAGE
-# python3 09_build_sample_resolved_alternative_pathways.py \
+# python3 01_build_sample_resolved_alternative_pathways.py \
 #   EET_membership_directory \
 #   MAG_KEGG_expression.tsv \
 #   MAG_PFAM_expression.tsv \
