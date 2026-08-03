@@ -28,7 +28,7 @@
 # combined and trimmed alignments, and the IQ-TREE phylogeny.
 #
 # SOFTWARE
-# Python >=3.11, HMMER 3.4, MAFFT 7.505, trimAl 1.5.rev0 and IQ-TREE 2.2.2.7.
+# Python >=3.11, HMMER 3.4, MAFFT 7.505, trimAl 1.5.rev0 and IQ-TREE 3.
 #
 # USAGE
 # python3 04_build_McrA_phylogeny.py \
