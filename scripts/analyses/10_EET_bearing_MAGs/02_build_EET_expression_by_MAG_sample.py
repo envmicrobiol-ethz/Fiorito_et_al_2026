@@ -15,7 +15,7 @@
 # summaries and QC files.
 #
 # USAGE
-# python3 10_build_EET_expression_by_MAG_sample.py \
+# python3 02_build_EET_expression_by_MAG_sample.py \
 #   EET_gene_expression_wide.tsv \
 #   analysis_output_directory \
 #   dereplicated_MAG_FASTA_directory
