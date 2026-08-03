@@ -18,7 +18,7 @@
 #
 # USAGE
 # Rscript Supplementary_Figure_2.R \
-#   23_refined_per_MAG_pathway_correlations.tsv \
+#   refined_per_MAG_pathway_correlations.tsv \
 #   output_directory
 
 suppressPackageStartupMessages({
