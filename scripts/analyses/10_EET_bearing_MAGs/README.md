@@ -1,4 +1,4 @@
-## 10 — EET-bearing MAGs
+## 10 - EET-bearing MAGs
 
 These scripts build the sample-resolved comparison between EET machinery
 expression and alternative respiratory pathways in EET-bearing MAGs.
