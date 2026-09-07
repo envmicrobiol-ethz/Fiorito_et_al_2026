@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH -n 1
-#SBATCH --job-name=ED_Figure7_clinker
+#SBATCH --job-name=ED_Figure8_clinker
 #SBATCH --cpus-per-task=8
 #SBATCH --mem-per-cpu=8G
 #SBATCH --time=120:00:00
@@ -11,7 +11,7 @@
 set -euo pipefail
 
 # DESCRIPTION
-# Reproduces the four clinker comparisons used for ED Figure 7 by comparing
+# Reproduces the four clinker comparisons used for ED Figure 8 by comparing
 # representative EET1-EET4 loci from this study with characterized EET loci
 # from model organisms.
 #
@@ -24,7 +24,7 @@ set -euo pipefail
 # Four clinker HTML alignments corresponding to EET1-EET4.
 #
 # USAGE
-# sbatch 04_ED_Figure7_reference_context_comparison_clinker.sh \
+# sbatch 04_ED_Figure8_reference_context_comparison_clinker.sh \
 #   output_directory \
 #   EET1_representative.gbff \
 #   EET2_representative.gbff \
@@ -88,39 +88,39 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 
-echo "Running ED Figure 7 comparison: EET1"
+echo "Running ED Figure 8 comparison: EET1"
 clinker \
     "$SHEW_BALTICA" \
     "$REP1" \
     "$GEO_OMCE" \
     --dont_set_origin \
     -ufo \
-    -p "${OUTPUT_DIR}/ED_Figure7_EET1.html"
+    -p "${OUTPUT_DIR}/ED_Figure8_EET1.html"
 
-echo "Running ED Figure 7 comparison: EET2"
+echo "Running ED Figure 8 comparison: EET2"
 clinker \
     "$SHEW_ONEIDENSIS" \
     "$REP2" \
     "$SHEW_BALTICA" \
     --dont_set_origin \
     -ufo \
-    -p "${OUTPUT_DIR}/ED_Figure7_EET2.html"
+    -p "${OUTPUT_DIR}/ED_Figure8_EET2.html"
 
-echo "Running ED Figure 7 comparison: EET3"
+echo "Running ED Figure 8 comparison: EET3"
 clinker \
     "$REP3" \
     "$SHEW_BALTICA" \
     --dont_set_origin \
-    -p "${OUTPUT_DIR}/ED_Figure7_EET3.html"
+    -p "${OUTPUT_DIR}/ED_Figure8_EET3.html"
 
-echo "Running ED Figure 7 comparison: EET4"
+echo "Running ED Figure 8 comparison: EET4"
 clinker \
     "$THERMINCOLA" \
     "$REP4" \
     "$SHEW_BALTICA" \
     --dont_set_origin \
     -ufo \
-    -p "${OUTPUT_DIR}/ED_Figure7_EET4.html"
+    -p "${OUTPUT_DIR}/ED_Figure8_EET4.html"
 
-echo "All ED Figure 7 clinker comparisons completed successfully."
+echo "All ED Figure 8 clinker comparisons completed successfully."
 echo "Output directory: $OUTPUT_DIR"
