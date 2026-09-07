@@ -1,3 +1,3 @@
-## Script ED Figure 5
+## Script ED Figure 6
 
-- `ED_Figure_5.R`: generates the Tier1 MHC PFAM annotation donut and the corresponding PSORT-localization mini pie charts for the 15 most frequent annotations.
+- `ED_Figure_6.R`: generates the Tier1 MHC PFAM annotation donut and the corresponding PSORT-localization mini pie charts for the 15 most frequent annotations.
