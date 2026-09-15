@@ -12,7 +12,7 @@
 - `08_generate_differential_coverage_profiles.sh`: maps selected cleaned metagenomic read sets to each filtered assembly using BBMap and produces sorted, indexed BAM files for downstream differential-coverage binning.
 - `09_metabat2_binning.sh`: generates differential scaffold-depth profiles from the selected cross-sample BAM files and performs per-assembly genome binning using MetaBAT2 v2.17.
 - `10_maxbin2_binning.sh`: extracts all sample-specific scaffold-coverage profiles from the MetaBAT2 depth tables and performs per-assembly genome binning using MaxBin2 v2.2.7.
-- `11_concoct_binning.sh`: generates differential scaffold-coverage tables from the selected cross-sample BAM files and performs per-assembly genome binning using CONCOCT v1.1.0 with 10-kb subcontigs.
+- `11_concoct_binning.sh`: generates differential scaffold-coverage tables from the selected cross-sample BAM files and performs per-assembly genome binning using CONCOCT v1.1.0.
 - `12_prepare_bins_for_das_tool.sh`: standardizes MetaBAT2, MaxBin2 and CONCOCT bin names and generates the corresponding contig-to-bin tables required by DAS Tool.
 - `13_das_tool_bin_selection.sh`: integrates the MetaBAT2, MaxBin2 and CONCOCT results and selects non-redundant genome bins for each assembly using DAS Tool v1.1.7.
 - `14_drep_species_level_dereplication.sh`: collects DAS Tool-selected bins, assigns unique sample-prefixed filenames and performs species-level dereplication using dRep v3.4.5 with 95% primary and secondary ANI thresholds, ≥50% completeness and ≤10% contamination.
