@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Supplementary Figure 3, showing the summed relative abundance
+# Generates Supplementary Figure 12, showing the summed relative abundance
 # and transcriptional activity of EET-bearing Acidobacteriota and
 # Verrucomicrobiota across peatland depths.
 #
@@ -18,12 +18,12 @@
 #   total_signal
 #
 # OUTPUT
-# Supplementary_Figure_3_plot_data.tsv
-# Supplementary_Figure_3.svg
-# Supplementary_Figure_3.pdf
+# Supplementary_Figure_12_plot_data.tsv
+# Supplementary_Figure_12.svg
+# Supplementary_Figure_12.pdf
 #
 # USAGE
-# Rscript Supplementary_Figure_3.R \
+# Rscript Supplementary_Figure_12.R \
 #   EET_depth_plot_input.tsv \
 #   output_directory
 
@@ -39,7 +39,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript Supplementary_Figure_3.R",
+      "Usage: Rscript Supplementary_Figure_12.R",
       "<EET_depth_plot_input.tsv>",
       "<output_directory>"
     ),
@@ -58,17 +58,17 @@ dir.create(
 
 OUT_PLOT_DATA <- file.path(
   OUTPUT_DIR,
-  "Supplementary_Figure_3_plot_data.tsv"
+  "Supplementary_Figure_12_plot_data.tsv"
 )
 
 OUT_SVG <- file.path(
   OUTPUT_DIR,
-  "Supplementary_Figure_3.svg"
+  "Supplementary_Figure_12.svg"
 )
 
 OUT_PDF <- file.path(
   OUTPUT_DIR,
-  "Supplementary_Figure_3.pdf"
+  "Supplementary_Figure_12.pdf"
 )
 
 
