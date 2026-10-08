@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 2B: an NMDS ordination of metagenomic
+# Generates Supplementary Figure 2B: an NMDS ordination of metagenomic
 # read datasets (Värmland, SPRUCE, Stordalen Mire) based on Mash distances.
 #
 # Duplicate pairwise comparisons are collapsed by retaining the minimum
@@ -13,10 +13,10 @@
 # 3. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 2B as SVG and PDF and the fitted NMDS object as RDS.
+# Supplementary Figure 2B as SVG and PDF and the fitted NMDS object as RDS.
 #
 # USAGE
-# Rscript ED_Figure_2B_MASH.R \
+# Rscript Supplementary_Figure_2B_MASH.R \
 #   metadata_MASH_reads.csv \
 #   mash_distances.tab \
 #   output_directory
@@ -34,7 +34,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 3) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_2B_MASH.R",
+      "Usage: Rscript Supplementary_Figure_2B_MASH.R",
       "<metadata.csv>",
       "<mash_distances.tab>",
       "<output_directory>"
@@ -55,17 +55,17 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_2B_NMDS_MASH_reads.svg"
+  "Supplementary_Figure_2B_NMDS_MASH_reads.svg"
 )
 
 out_pdf <- file.path(
   output_dir,
-  "ED_Figure_2B_NMDS_MASH_reads.pdf"
+  "Supplementary_Figure_2B_NMDS_MASH_reads.pdf"
 )
 
 out_rds <- file.path(
   output_dir,
-  "ED_Figure_2B_NMDS_MASH_object.rds"
+  "Supplementary_Figure_2B_NMDS_MASH_object.rds"
 )
 
 clean_name <- function(x) {
