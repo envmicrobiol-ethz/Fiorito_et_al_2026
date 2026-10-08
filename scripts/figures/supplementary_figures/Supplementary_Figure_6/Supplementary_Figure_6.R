@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 6:
+# Generates Supplementary Figure 6:
 #   A. Donut chart showing the 15 most frequent PFAM annotations among
 #      Tier1 MHC proteins.
 #   B. Mini pie charts showing PSORT localization within each of the
@@ -15,10 +15,10 @@
 # 2. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 6 as SVG, PDF and PNG.
+# Supplementary Figure 6 as SVG, PDF and PNG.
 #
 # USAGE
-# Rscript ED_Figure_6.R \
+# Rscript Supplementary_Figure_6.R \
 #   MHC_overview_Tier1_with_PFAM_and_PSORT.xlsx \
 #   output_directory
 
@@ -35,7 +35,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_6.R",
+      "Usage: Rscript Supplementary_Figure_6.R",
       "<Tier1_MHC_overview.xlsx>",
       "<output_directory>"
     ),
@@ -54,17 +54,17 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_6_Tier1_PFAM_annotations_and_PSORT.svg"
+  "Supplementary_Figure_6_Tier1_PFAM_annotations_and_PSORT.svg"
 )
 
 out_pdf <- file.path(
   output_dir,
-  "ED_Figure_6_Tier1_PFAM_annotations_and_PSORT.pdf"
+  "Supplementary_Figure_6_Tier1_PFAM_annotations_and_PSORT.pdf"
 )
 
 out_png <- file.path(
   output_dir,
-  "ED_Figure_6_Tier1_PFAM_annotations_and_PSORT.png"
+  "Supplementary_Figure_6_Tier1_PFAM_annotations_and_PSORT.png"
 )
 
 mhc <- readxl::read_xlsx(
