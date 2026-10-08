@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Supplementary Figure 2: a bubble plot summarizing the fraction
+# Generates Supplementary Figure 13: a bubble plot summarizing the fraction
 # of MAGs in each EET group with a positive correlation between EET
 # expression and expression of alternative respiratory pathways.
 #
@@ -14,10 +14,10 @@
 # 2. Output directory.
 #
 # OUTPUT
-# Supplementary Figure 2 as SVG and PDF and the plotted summary as TSV.
+# Supplementary Figure 13 as SVG and PDF and the plotted summary as TSV.
 #
 # USAGE
-# Rscript Supplementary_Figure_2.R \
+# Rscript Supplementary_Figure_13.R \
 #   refined_per_MAG_pathway_correlations.tsv \
 #   output_directory
 
@@ -32,7 +32,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript Supplementary_Figure_2.R",
+      "Usage: Rscript Supplementary_Figure_13.R",
       "<per_MAG_pathway_correlations.tsv>",
       "<output_directory>"
     ),
@@ -51,17 +51,17 @@ dir.create(
 
 OUT_SUMMARY_TSV <- file.path(
   output_dir,
-  "Supplementary_Figure_2_summary.tsv"
+  "Supplementary_Figure_13_summary.tsv"
 )
 
 OUT_SVG <- file.path(
   output_dir,
-  "Supplementary_Figure_2.svg"
+  "Supplementary_Figure_13.svg"
 )
 
 OUT_PDF <- file.path(
   output_dir,
-  "Supplementary_Figure_2.pdf"
+  "Supplementary_Figure_13.pdf"
 )
 
 TARGET_OUTCOME <- "pathway_max_MT_coverage_per_cell"
