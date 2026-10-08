@@ -1,2 +1,3 @@
-## Script
-- `Supplementary_Figure_3.R`: generates the four-panel depth-profile figure for EET-bearing Acidobacteriota and Verrucomicrobiota.
+## Script ED Figure 3
+
+- `Extended_Data_Figure_3.R`: generates the dominant-phylum bubble plot for terminal reductases and hydrogenases from MAG-level KEGG, METABOLIC and PFAM metatranscriptomic profiles.
