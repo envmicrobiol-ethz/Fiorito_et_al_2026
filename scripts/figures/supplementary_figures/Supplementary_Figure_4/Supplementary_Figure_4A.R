@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 4A: abundance of methane-cycling MAGs
+# Generates Supplementary Figure 4A: abundance of methane-cycling MAGs
 # across metagenomic samples.
 #
 # Taxa are displayed at genus level when a genus assignment is available.
@@ -13,10 +13,10 @@
 # 2. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 4A as SVG.
+# Supplementary Figure 4A as SVG.
 #
 # USAGE
-# Rscript ED_Figure_4A.R \
+# Rscript Supplementary_Figure_4A.R \
 #   methane_cycling_MAGs_taxonomy_abundance.tsv \
 #   output_directory
 
@@ -34,7 +34,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_4A.R",
+      "Usage: Rscript Supplementary_Figure_4A.R",
       "<methane_cycling_MAGs_taxonomy_abundance.tsv>",
       "<output_directory>"
     ),
@@ -53,7 +53,7 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_4A_methane_cycling_MAG_abundance.svg"
+  "Supplementary_Figure_4A_methane_cycling_MAG_abundance.svg"
 )
 
 data <- readr::read_tsv(
