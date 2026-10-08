@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 2A: a taxonomic-composition comparison
+# Generates Supplementary Figure 2A: a taxonomic-composition comparison
 # across 16S rRNA amplicons, SingleM profiles of metagenomic reads, and
 # reconstructed MAGs.
 #
@@ -16,10 +16,10 @@
 # 4. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 2A as SVG and PDF, plus the plotted values as TSV.
+# Supplementary Figure 2A as SVG and PDF, plus the plotted values as TSV.
 #
 # USAGE
-# Rscript ED_Figure_2A.R \
+# Rscript Supplementary_Figure_2A.R \
 #   combined_16S_taxonomy_relative_abundance.xlsx \
 #   singlem_profiles_directory \
 #   MAG_taxonomy_abundance.tsv \
@@ -40,7 +40,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 4) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_2A.R",
+      "Usage: Rscript Supplementary_Figure_2A.R",
       "<16S_taxonomy.xlsx>",
       "<SingleM_directory>",
       "<MAG_taxonomy_abundance.tsv>",
@@ -63,17 +63,17 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_2A_taxonomy_16S_SingleM_MAGs.svg"
+  "Supplementary_Figure_2A_taxonomy_16S_SingleM_MAGs.svg"
 )
 
 out_pdf <- file.path(
   output_dir,
-  "ED_Figure_2A_taxonomy_16S_SingleM_MAGs.pdf"
+  "Supplementary_Figure_2A_taxonomy_16S_SingleM_MAGs.pdf"
 )
 
 out_tsv <- file.path(
   output_dir,
-  "ED_Figure_2A_taxonomy_16S_SingleM_MAGs_values.tsv"
+  "Supplementary_Figure_2A_taxonomy_16S_SingleM_MAGs_values.tsv"
 )
 
 # ============================================================
