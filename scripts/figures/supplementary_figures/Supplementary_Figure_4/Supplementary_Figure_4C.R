@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 4C: a heatmap of average
+# Generates Supplementary Figure 4C: a heatmap of average
 # MT_coverage_per_cell values for selected methanogenesis and associated
 # metabolic markers across target methanogenic genera.
 #
@@ -15,10 +15,10 @@
 # 2. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 4C as SVG and PDF.
+# Supplementary Figure 4C as SVG and PDF.
 #
 # USAGE
-# Rscript ED_Figure_4C.R \
+# Rscript Supplementary_Figure_4C.R \
 #   selected_methanogen_MAGs_KEGG_expression.tsv \
 #   output_directory
 
@@ -33,7 +33,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_4C.R",
+      "Usage: Rscript Supplementary_Figure_4C.R",
       "<KEGG_expression.tsv>",
       "<output_directory>"
     ),
@@ -52,12 +52,12 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_4C_methanogen_metabolic_expression_heatmap.svg"
+  "Supplementary_Figure_4C_methanogen_metabolic_expression_heatmap.svg"
 )
 
 out_pdf <- file.path(
   output_dir,
-  "ED_Figure_4C_methanogen_metabolic_expression_heatmap.pdf"
+  "Supplementary_Figure_4C_methanogen_metabolic_expression_heatmap.pdf"
 )
 
 df <- readr::read_tsv(
