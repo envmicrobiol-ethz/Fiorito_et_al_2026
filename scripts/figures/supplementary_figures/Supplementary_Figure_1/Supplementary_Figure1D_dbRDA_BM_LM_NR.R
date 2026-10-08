@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 ###############################################################################
-# EXTENDED DATA FIGURE 1D — dbRDA OF BM, LM AND NR
+# SUPPLEMENTARY FIGURE 1D — dbRDA OF BM, LM AND NR
 #
 # DESCRIPTION
 # Generates the dbRDA of BM, LM and NR spatial 16S rRNA communities using
@@ -13,7 +13,7 @@
 # 04_prepare_16S_community_table.R
 #
 # Environmental metadata:
-# Supplementary_Table_2.xlsx
+# Supplementary_Table_4.xlsx
 #
 # Required microbial columns:
 # Sample, OTU, Abundance
@@ -21,12 +21,12 @@
 # BM.3.10 is intentionally excluded.
 #
 # OUTPUT
-# EDFigure1D_dbRDA_BM_LM_NR.svg
+# Supplementary_Figure1D_dbRDA_BM_LM_NR.svg
 #
 # USAGE
-# Rscript EDFigure1D_dbRDA_BM_LM_NR.R \
+# Rscript Supplementary_Figure1D_dbRDA_BM_LM_NR.R \
 #   microbial_table.xlsx \
-#   Supplementary_Table_2.xlsx \
+#   Supplementary_Table_4.xlsx \
 #   output_directory
 ###############################################################################
 
@@ -62,9 +62,9 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) < 2 || length(args) > 3) {
   stop(
     paste(
-      "Usage: Rscript EDFigure1D_dbRDA_BM_LM_NR.R",
+      "Usage: Rscript Supplementary_Figure1D_dbRDA_BM_LM_NR.R",
       "<microbial_table.xlsx>",
-      "<Supplementary_Table_2.xlsx>",
+      "<Supplementary_Table_4.xlsx>",
       "[output_directory]"
     )
   )
@@ -90,7 +90,7 @@ dir.create(
 
 output_svg <- file.path(
   output_dir,
-  "EDFigure1D_dbRDA_BM_LM_NR.svg"
+  "Supplementary_Figure1D_dbRDA_BM_LM_NR.svg"
 )
 
 ###############################################################################
@@ -151,7 +151,7 @@ if (anyDuplicated(
 
 environmental_raw <- readxl::read_excel(
   metadata_file,
-  sheet = "Supplementary_Table_2",
+  sheet = "Supplementary_Table_4",
   skip = 4,
   na = ""
 )
@@ -607,7 +607,7 @@ ggplot2::ggsave(
 )
 
 cat(
-  "\nExtended Data Figure 1D saved to:\n",
+  "\nSupplementary Figure 1D saved to:\n",
   output_svg,
   "\n",
   sep = ""
