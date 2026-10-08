@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 4B: normalized metatranscriptomic expression
+# Generates Supplementary Figure 4B: normalized metatranscriptomic expression
 # of methane-cycling MAGs.
 #
 # Taxa are displayed at genus level when a genus assignment is available.
@@ -14,10 +14,10 @@
 # 2. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 4B as SVG.
+# Supplementary Figure 4B as SVG.
 #
 # USAGE
-# Rscript ED_Figure_4B.R \
+# Rscript Supplementary_Figure_4B.R \
 #   methane_cycling_MAGs_normalized_expression.tsv \
 #   output_directory
 
@@ -35,7 +35,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 2) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_4B.R",
+      "Usage: Rscript Supplementary_Figure_4B.R",
       "<methane_cycling_MAGs_normalized_expression.tsv>",
       "<output_directory>"
     ),
@@ -54,7 +54,7 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_4B_methane_cycling_MAG_expression.svg"
+  "Supplementary_Figure_4B_methane_cycling_MAG_expression.svg"
 )
 
 data <- readr::read_tsv(
