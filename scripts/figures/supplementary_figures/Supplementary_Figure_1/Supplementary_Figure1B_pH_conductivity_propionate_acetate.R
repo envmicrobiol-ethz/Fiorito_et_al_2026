@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 ###############################################################################
-# EXTENDED DATA FIGURE 1B — BIOGEOCHEMICAL DEPTH PROFILES
+# Supplementary FIGURE 1B — BIOGEOCHEMICAL DEPTH PROFILES
 #
 # DESCRIPTION
 # Generates pH, conductivity, propionate and acetate depth profiles for
@@ -11,11 +11,11 @@
 # No external input file. Source measurements are defined below.
 #
 # OUTPUT
-# EDFigure1B_BM_pH_conductivity_propionate_acetate.svg
-# EDFigure1B_NR_pH_conductivity_propionate_acetate.svg
+# Supplementary_Figure1B_BM_pH_conductivity_propionate_acetate.svg
+# Supplementary_Figure1B_NR_pH_conductivity_propionate_acetate.svg
 #
 # USAGE
-# Rscript EDFigure1B_pH_conductivity_propionate_acetate.R [output_directory]
+# Rscript Supplementary_Figure1B_pH_conductivity_propionate_acetate.R [output_directory]
 ###############################################################################
 
 required_packages <- c(
@@ -51,7 +51,7 @@ args <- commandArgs(trailingOnly = TRUE)
 
 if (length(args) > 1) {
   stop(
-    "Usage: Rscript EDFigure1B_pH_conductivity_propionate_acetate.R [output_directory]"
+    "Usage: Rscript Supplementary_Figure1B_pH_conductivity_propionate_acetate.R [output_directory]"
   )
 }
 
@@ -65,17 +65,17 @@ dir.create(
 
 bm_svg <- file.path(
   output_dir,
-  "EDFigure1B_BM_pH_conductivity_propionate_acetate.svg"
+  "Supplementary_Figure1B_BM_pH_conductivity_propionate_acetate.svg"
 )
 
 lm_svg <- file.path(
   output_dir,
-  "EDFigure1B_LM_pH_conductivity_propionate_acetate.svg"
+  "Supplementary_Figure1B_LM_pH_conductivity_propionate_acetate.svg"
 )
 
 nr_svg <- file.path(
   output_dir,
-  "EDFigure1B_NR_pH_conductivity_propionate_acetate.svg"
+  "Supplementary_Figure1B_NR_pH_conductivity_propionate_acetate.svg"
 )
 
 ###############################################################################
@@ -423,6 +423,6 @@ ggplot2::ggsave(
 )
 
 cat(
-  "\nExtended Data Figure 1B completed.\n",
+  "\nSupplementary Figure 1B completed.\n",
   sep = ""
 )
