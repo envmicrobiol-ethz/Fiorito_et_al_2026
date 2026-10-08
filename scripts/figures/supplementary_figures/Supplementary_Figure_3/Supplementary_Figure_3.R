@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 # DESCRIPTION
-# Generates Extended Data Figure 3, showing the dominant phylum associated with expression
+# Generates Supplementary Figure 3, showing the dominant phylum associated with expression
 # of terminal reductases and hydrogenases across peatlands and
 # depth layers.
 #
@@ -18,10 +18,10 @@
 # 5. Output directory.
 #
 # OUTPUT
-# Extended Data Figure 3 as SVG and PDF, plotted values TSV and phylum-ranking TSV.
+# Supplementary Figure 3 as SVG and PDF, plotted values TSV and phylum-ranking TSV.
 #
 # USAGE
-# Rscript ED_Figure_3.R \
+# Rscript Supplementary_Figure_3.R \
 #   MAG_taxonomy.tsv \
 #   MAGs.KEGG.expression_profile.tsv \
 #   MAGs.METABOLIC.expression_profile.tsv \
@@ -44,7 +44,7 @@ args <- commandArgs(trailingOnly = TRUE)
 if (length(args) != 5) {
   stop(
     paste(
-      "Usage: Rscript ED_Figure_3.R",
+      "Usage: Rscript Supplementary_Figure_3.R",
       "<MAG_taxonomy.tsv>",
       "<KEGG_expression.tsv>",
       "<METABOLIC_expression.tsv>",
@@ -69,22 +69,22 @@ dir.create(
 
 out_svg <- file.path(
   output_dir,
-  "ED_Figure_3_terminal_reductases_EET_hydrogenases.svg"
+  "Supplementary_Figure_3_terminal_reductases_EET_hydrogenases.svg"
 )
 
 out_pdf <- file.path(
   output_dir,
-  "ED_Figure_3_terminal_reductases_EET_hydrogenases.pdf"
+  "Supplementary_Figure_3_terminal_reductases_EET_hydrogenases.pdf"
 )
 
 out_values <- file.path(
   output_dir,
-  "ED_Figure_3_terminal_reductases_EET_hydrogenases_values.tsv"
+  "Supplementary_Figure_3_terminal_reductases_EET_hydrogenases_values.tsv"
 )
 
 out_ranking <- file.path(
   output_dir,
-  "ED_Figure_3_phylum_expression_ranking.tsv"
+  "Supplementary_Figure_3_phylum_expression_ranking.tsv"
 )
 
 plot_font <- "Helvetica"
