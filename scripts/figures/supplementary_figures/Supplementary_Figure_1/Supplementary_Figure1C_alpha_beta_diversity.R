@@ -1,7 +1,7 @@
 #!/usr/bin/env Rscript
 
 ###############################################################################
-# EXTENDED DATA FIGURE 1C — ALPHA AND BETA DIVERSITY
+# SUPPLEMENTARY FIGURE 1C — ALPHA AND BETA DIVERSITY
 #
 # DESCRIPTION
 # Generates richness, evenness, Shannon, Bray-Curtis and Jaccard profiles.
@@ -14,10 +14,10 @@
 # 02_alpha_diversity_analysis.R
 #
 # OUTPUT
-# EDFigure1C_alpha_beta_diversity.svg
+# Supplementary_Figure1C_alpha_beta_diversity.svg
 #
 # USAGE
-# Rscript EDFigure1C_alpha_beta_diversity.R \
+# Rscript Supplementary_Figure1C_alpha_beta_diversity.R \
 #   alpha_diversity_analysis_objects.rds \
 #   output_directory
 ###############################################################################
@@ -60,7 +60,7 @@ if (length(args) < 1 || length(args) > 2) {
   stop(
     paste(
       "Usage:",
-      "Rscript EDFigure1C_alpha_beta_diversity.R",
+      "Rscript Supplementary_Figure1C_alpha_beta_diversity.R",
       "<alpha_diversity_analysis_objects.rds>",
       "[output_directory]"
     )
@@ -82,7 +82,7 @@ dir.create(
 
 output_svg <- file.path(
   output_dir,
-  "EDFigure1C_alpha_beta_diversity.svg"
+  "Supplementary_Figure1C_alpha_beta_diversity.svg"
 )
 
 ###############################################################################
@@ -921,7 +921,7 @@ ggplot2::ggsave(
 )
 
 cat(
-  "\nExtended Data Figure 1C saved to:\n",
+  "\nSupplementary Figure 1C saved to:\n",
   output_svg,
   "\n",
   sep = ""
