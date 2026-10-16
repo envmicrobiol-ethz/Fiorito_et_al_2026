@@ -1,4 +1,4 @@
-# Fiorito et al. 2026
+# Fiorito et al. 2026 - Conserved candidate extracellular electron transfer machinery is widespread and transcriptionally active across deep peat profiles
 This repository contains bioinformatic analyses and figure-generation scripts for Fiorito et al. 2026 https://doi.org/10.64898/2026.05.27.727921
 
 
